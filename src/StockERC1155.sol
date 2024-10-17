@@ -9,7 +9,7 @@ contract StockERC1155 is ERC1155, Ownable {
     uint256 private totalSupply;
     uint256 private availableSupply;
     uint256 private stockPrice;
-    uint256 private constant STOCK_TYPE=0;
+    uint256 private constant STOCK_TYPE = 0;
 
     constructor(string memory _uri, address _owner) ERC1155(_uri) Ownable(msg.sender) {
         companyOwner = _owner;

@@ -12,6 +12,5 @@ contract Deploy is Script {
         nexTrade = new NexTradeERC1155();
         vm.stopBroadcast();
         return nexTrade;
-
     }
 }

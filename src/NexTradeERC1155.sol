@@ -14,15 +14,13 @@ contract NexTradeERC1155 {
     event CompanyCreated(address indexed owner, address stockContract);
     event StockBought(address indexed buyer, uint256 amount);
     event StockSold(address indexed seller, uint256 amount);
-    
+
     error NexTrade__NoStockContract();
     error NexTrade__NoStock();
     error NexTrade__NotEnoughStockAvailable();
     error NexTrade__IncorrectPayment();
     error NexTrade__CompanyAlreadyCreatedStock();
     error NexTrade__CompanyAlreadyHasStock();
-
-
 
     modifier hasStockContractAndStocks(address _company) {
         require(getCompanyStockContract(_company) != address(0), NexTrade__NoStockContract());
@@ -38,10 +36,7 @@ contract NexTradeERC1155 {
         StockERC1155 newStockContract = new StockERC1155(uri, msg.sender);
 
         // Store the company's details
-        companies[msg.sender] = Company({
-            owner: msg.sender,
-            stockContract: address(newStockContract)
-        });
+        companies[msg.sender] = Company({owner: msg.sender, stockContract: address(newStockContract)});
 
         emit CompanyCreated(msg.sender, address(newStockContract));
     }
@@ -89,7 +84,6 @@ contract NexTradeERC1155 {
         emit StockSold(msg.sender, _amount);
     }
 
-    
     // Retrieve the stock contract for a company
     function getCompanyStockContract(address company) public view returns (address) {
         return companies[company].stockContract;
@@ -100,10 +94,15 @@ contract NexTradeERC1155 {
         StockERC1155 stockContract = StockERC1155(stockContractAddress);
         return stockContract.getStockPrice();
     }
-    function getCompanyAvailableStocks(address _company) public view hasStockContractAndStocks(_company) returns (uint256) {
+
+    function getCompanyAvailableStocks(address _company)
+        public
+        view
+        hasStockContractAndStocks(_company)
+        returns (uint256)
+    {
         address stockContractAddress = getCompanyStockContract(_company);
         StockERC1155 stockContract = StockERC1155(stockContractAddress);
         return stockContract.getAvailableSupply();
     }
-
 }
