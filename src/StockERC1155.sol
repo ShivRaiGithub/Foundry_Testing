@@ -11,11 +11,15 @@ contract StockERC1155 is ERC1155, Ownable {
     uint256 private stockPrice;
     uint256 private constant STOCK_TYPE = 0;
 
+
+    //////////// CONSTRUCTOR ////////////
+    // Constructor called when contract is created
     constructor(string memory _uri, address _owner) ERC1155(_uri) Ownable(msg.sender) {
         companyOwner = _owner;
     }
 
-    // Create stock with initial supply and price
+    //////////// FUNCTIONS ////////////
+    // Create stock with initial(total) supply and price
     function createStock(uint256 _price, uint256 _initialSupply) external onlyOwner {
         totalSupply = _initialSupply;
         availableSupply = _initialSupply;
@@ -23,32 +27,21 @@ contract StockERC1155 is ERC1155, Ownable {
         _mint(companyOwner, STOCK_TYPE, _initialSupply, "");
     }
 
-    // Buy stock from the stock contract
+    // Buy stocks
     function buyStock(address buyer, uint256 amount) external payable onlyOwner {
         uint256 totalPrice = stockPrice * amount;
         require(msg.value == totalPrice, "Incorrect payment amount");
         require(amount <= availableSupply, "Not enough stocks available");
-
-        // Update available supply
         availableSupply -= amount;
-
-        // Transfer the stock tokens to the buyer
         _safeTransferFrom(companyOwner, buyer, STOCK_TYPE, amount, "");
     }
 
-    // Sell stock back to the stock contract
+    // Sell stocks
     function sellStock(address seller, uint256 amount) external onlyOwner {
         require(balanceOf(seller, STOCK_TYPE) >= amount, "Insufficient stock to sell");
-
         uint256 totalPrice = stockPrice * amount;
-
-        // Transfer stock tokens back to the company owner
         _safeTransferFrom(seller, companyOwner, STOCK_TYPE, amount, "");
-
-        // Update available supply
         availableSupply += amount;
-
-        // Pay the seller from the contract's balance
         payable(seller).transfer(totalPrice);
     }
 
